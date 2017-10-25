@@ -71,7 +71,7 @@ public class RefreshIndicator: UIControl {
         super.willMove(toSuperview: newSuperview)
 
         targetView = newSuperview as? UIScrollView
-        initialInsetTop = targetView!.contentInset.top
+        initialInsetTop = targetView?.contentInset.top ?? 0
     }
 
     open override func didMoveToSuperview() {
