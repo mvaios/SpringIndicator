@@ -15,7 +15,6 @@ public class RefreshIndicator: UIControl {
 
     private let defaultContentHeight: CGFloat = 60
     private var refreshContext = UInt8()
-    private var initialInsetTop: CGFloat = 0
     private weak var target: AnyObject?
     private var targetView: UIScrollView? {
         willSet {
@@ -26,6 +25,7 @@ public class RefreshIndicator: UIControl {
         }
     }
 
+    public var initialInsetTop: CGFloat = 0
     public let indicator = SpringIndicator(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
     public private(set) var isRefreshing: Bool = false
 
@@ -60,14 +60,10 @@ public class RefreshIndicator: UIControl {
         isUserInteractionEnabled = false
 
         if let scrollView = superview as? UIScrollView {
-            autoresizingMask = [.flexibleWidth, .flexibleBottomMargin]
             frame.size.height = defaultContentHeight
-            frame.size.width = scrollView.bounds.width
-            center.x = scrollView.center.x
-        }
-
-        if let scrollView = targetView {
-            initialInsetTop = scrollView.contentInset.top
+            frame.size.width = scrollView.bounds.width - scrollView.contentInset.left - scrollView.contentInset.right
+            frame.origin.x = 0
+            frame.origin.y = -defaultContentHeight - initialInsetTop
         }
     }
 
@@ -75,6 +71,7 @@ public class RefreshIndicator: UIControl {
         super.willMove(toSuperview: newSuperview)
 
         targetView = newSuperview as? UIScrollView
+        initialInsetTop = targetView!.contentInset.top
     }
 
     open override func didMoveToSuperview() {
@@ -117,9 +114,8 @@ public class RefreshIndicator: UIControl {
         }
 
         if superview == scrollView {
-            frame.origin.y = scrollOffset(scrollView)
+            //frame.origin.y = -defaultContentHeight
         }
-
         if indicator.isSpinning {
             return
         }
